@@ -53,17 +53,17 @@ def calcular_calidad(df, dimensiones):
     
     if "Outliers" in dimensiones:
         outliers, outliers_column = evaluar_outliers(valid_df)
-        calidad["Outliers (%)"] = calidad.index.map(outliers).fillna(np.nan)
+        calidad["No Outliers (%)"] = calidad.index.map(outliers).fillna(np.nan)
         for col in outliers_column.columns:
             valid_df[f"{col}_outliers"] = outliers_column[col]
     
-    calidad["Puntaje Total"] = calidad[["Completitud (%)", "Unicidad (%)", "Outliers (%)"]].mean(axis=1, skipna=True)
+    calidad["Puntaje Total"] = calidad[["Completitud (%)", "Unicidad (%)", "No Outliers (%)"]].mean(axis=1, skipna=True)
     
     total_fila = {
         "Valores únicos": np.nan,
         "Completitud (%)": calidad["Completitud (%)"].mean() if "Completitud" in dimensiones else np.nan,
         "Unicidad (%)": calidad["Unicidad (%)"].mean() if "Unicidad" in dimensiones else np.nan,
-        "Outliers (%)": calidad["Outliers (%)"].mean() if "Outliers" in dimensiones else np.nan,
+        "Outliers (%)": calidad["No Outliers (%)"].mean() if "Outliers" in dimensiones else np.nan,
         "Puntaje Total": calidad["Puntaje Total"].mean()
     }
     calidad.loc["Total"] = total_fila
@@ -94,13 +94,13 @@ if uploaded_file:
             - **Valores únicos:** Cantidad de valores únicos presentes en un conjunto de datos.
             - **Completitud (%):** Grado en que los datos están completos.
             - **Unicidad (%):** Proporción de datos únicos en una columna.
-            - **Outliers (%):** Proporción de datos no considerados como outliers.
+            - **No Outliers (%):** Proporción de datos no considerados como outliers.
             """)
             
             dimensiones_seleccionadas = st.multiselect(
                 "Seleccione las dimensiones de calidad que desea evaluar:",
-                options=["Completitud", "Unicidad", "Outliers"],
-                default=["Completitud", "Unicidad", "Outliers"]
+                options=["Completitud", "Unicidad", "No Outliers"],
+                default=["Completitud", "Unicidad", "No Outliers"]
             )
 
             if st.button("Calcular Calidad de los Datos"):
@@ -118,7 +118,7 @@ if uploaded_file:
                 st.pyplot(fig)
                 
                 if len(dimensiones_seleccionadas) > 0:
-                    metrics = ["Completitud (%)", "Unicidad (%)", "Outliers (%)"]
+                    metrics = ["Completitud (%)", "Unicidad (%)", "No Outliers (%)"]
                     metrics = [metric for metric in metrics if metric.replace(" (%)", "") in dimensiones_seleccionadas]
                     totals = calidad.loc["Total", metrics].values
                     st.subheader("Radar de Calidad Total")
