@@ -63,7 +63,7 @@ def calcular_calidad(df, dimensiones):
         "Valores únicos": np.nan,
         "Completitud (%)": calidad["Completitud (%)"].mean() if "Completitud" in dimensiones else np.nan,
         "Unicidad (%)": calidad["Unicidad (%)"].mean() if "Unicidad" in dimensiones else np.nan,
-        "Outliers (%)": calidad["No Outliers (%)"].mean() if "Outliers" in dimensiones else np.nan,
+        "No Outliers (%)": calidad["No Outliers (%)"].mean() if "Outliers" in dimensiones else np.nan,
         "Puntaje Total": calidad["Puntaje Total"].mean()
     }
     calidad.loc["Total"] = total_fila
@@ -130,7 +130,7 @@ if uploaded_file:
     
                 if "Outliers" in dimensiones_seleccionadas:
                     st.subheader("Resultados de Outliers:")
-                    st.bar_chart(calidad["Outliers (%)"])
+                    st.bar_chart(calidad["No Outliers (%)"])
 
                 st.subheader("Descargar CSV con score_calidad")
                 csv = final_df.to_csv(index=False).encode('utf-8')
