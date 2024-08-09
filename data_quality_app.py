@@ -34,7 +34,7 @@ def evaluar_outliers(df):
 
 # Función principal para calcular la calidad de los datos
 def calcular_calidad(df, dimensiones):
-    calidad = pd.DataFrame(index=df.columns, columns=["Valores únicos", "Completitud (%)", "Unicidad (%)", "Outliers (%)", "Puntaje Total"])
+    calidad = pd.DataFrame(index=df.columns, columns=["Valores únicos", "Completitud (%)", "Unicidad (%)", "No Outliers (%)", "Puntaje Total"])
     calidad["Valores únicos"] = [df[col].nunique() for col in df.columns]
     
     valid_df = df.copy()
@@ -51,11 +51,11 @@ def calcular_calidad(df, dimensiones):
         for col in df.columns:
             valid_df[f"{col}_unicidad"] = unicidad_column[col]
     
-    if "Outliers" in dimensiones:
+    if "No Outliers" in dimensiones:
         outliers, outliers_column = evaluar_outliers(valid_df)
         calidad["No Outliers (%)"] = calidad.index.map(outliers).fillna(np.nan)
         for col in outliers_column.columns:
-            valid_df[f"{col}_outliers"] = outliers_column[col]
+            valid_df[f"{col}_no outliers"] = outliers_column[col]
     
     calidad["Puntaje Total"] = calidad[["Completitud (%)", "Unicidad (%)", "No Outliers (%)"]].mean(axis=1, skipna=True)
     
@@ -63,7 +63,7 @@ def calcular_calidad(df, dimensiones):
         "Valores únicos": np.nan,
         "Completitud (%)": calidad["Completitud (%)"].mean() if "Completitud" in dimensiones else np.nan,
         "Unicidad (%)": calidad["Unicidad (%)"].mean() if "Unicidad" in dimensiones else np.nan,
-        "No Outliers (%)": calidad["No Outliers (%)"].mean() if "Outliers" in dimensiones else np.nan,
+        "No Outliers (%)": calidad["No Outliers (%)"].mean() if "No Outliers" in dimensiones else np.nan,
         "Puntaje Total": calidad["Puntaje Total"].mean()
     }
     calidad.loc["Total"] = total_fila
@@ -128,7 +128,7 @@ if uploaded_file:
 
                 st.bar_chart(calidad["Puntaje Total"])
     
-                if "Outliers" in dimensiones_seleccionadas:
+                if "No Outliers" in dimensiones_seleccionadas:
                     st.subheader("Resultados de Outliers:")
                     st.bar_chart(calidad["No Outliers (%)"])
 
